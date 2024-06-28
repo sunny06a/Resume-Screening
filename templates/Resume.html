@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resume Screening App</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            transition: transform 0.3s;
+        }
+        h1 {
+            text-align: center;
+            color: #007bff;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        input[type="file"] {
+            margin: 20px 0;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+        input[type="submit"] {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+        input[type="file"]:hover {
+            border-color: #007bff;
+            transform: scale(1.05);
+        }
+        p {
+            font-size: 16px;
+            color: #555;
+            transition: color 0.3s;
+        }
+        p:hover {
+            color: #000;
+        }
+        .info-section {
+            margin-top: 20px;
+            transition: transform 0.3s;
+        }
+        .info-section:hover {
+            transform: scale(1.02);
+        }
+        .info-section h2 {
+            color: #007bff;
+        }
+        .info-section strong {
+            color: #000;
+        }
+        .info-section p {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .info-section p:hover {
+            background-color: #e7f3ff;
+            transform: scale(1.02);
+        }
+        .skills, .education {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0;
+            list-style: none;
+        }
+        .skills li, .education li {
+            background: #e7f3ff;
+            margin: 5px;
+            padding: 10px;
+            border-radius: 5px;
+            flex: 1 1 calc(33.333% - 10px);
+            text-align: center;
+            font-weight: 700;
+            color: #333;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .skills li:nth-child(odd), .education li:nth-child(odd) {
+            background: #d2e7ff;
+        }
+        .skills li:hover, .education li:hover {
+            background-color: #b0d4ff;
+            transform: scale(1.05);
+        }
+        @media (max-width: 600px) {
+            .container {
+                margin: 20px;
+                padding: 15px;
+            }
+            input[type="submit"] {
+                width: 100%;
+                box-sizing: border-box;
+            }
+            .skills li, .education li {
+                flex: 1 1 calc(100% - 10px);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Resume Screening Based on AI System</h1>
+        <form action="/pred" method="post" enctype="multipart/form-data">
+            <input type="file" name="resume" accept=".pdf, .txt" required>
+            <input type="submit" value="Submit">
+        </form>
+
+        {% if message %}
+        <p>{{ message }}</p>
+        {% endif %}
+
+        {% if predicted_cat %}
+        <div class="info-section">
+            <h2>Predicted Information</h2>
+            <p><strong>Predicted Category:</strong> {{ predicted_cat }}</p>
+            <p><strong>Recommended Job:</strong> {{ recommended_job }}</p>
+
+            <h2>Extracted Information</h2>
+            <p><strong>Name:</strong> {{ name }}</p>
+            <p><strong>Phone Number:</strong> {{ phone }}</p>
+            <p><strong>Email:</strong> {{ email }}</p>
+
+            {% if skills %}
+            <p><strong>Skills:</strong></p>
+            <ul class="skills">
+                {% for skill in skills %}
+                <li>{{ skill }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>No skills found</p>
+            {% endif %}
+
+            {% if education %}
+            <p><strong>Education:</strong></p>
+            <ul class="education">
+                {% for edu in education %}
+                <li>{{ edu }}</li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p>No education found</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
