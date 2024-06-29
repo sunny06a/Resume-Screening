@@ -5,10 +5,14 @@ import re
 app = Flask(__name__)
 
 
-rf_classifier_categorization = pickle.load(open('models/rf_classifier_categorization.pkl','rb'))
-tfidf_vectorizer_categorization = pickle.load(open('models/tfidf_vectorizer_categorization.pkl','rb'))
-rf_classifier_job_recommendation = pickle.load(open('models/rf_classifier_job_recommendation.pkl','rb'))
-tfidf_vectorizer_job_recommendation = pickle.load(open('models/tfidf_vectorizer_job_recommendation.pkl','rb'))
+with open('models/rf_classifier_categorization.pkl', 'rb') as f:
+    rf_classifier_categorization = pickle.load(f)
+with open('models/tfidf_vectorizer_categorization.pkl', 'rb') as f:
+    tfidf_vectorizer_categorization = pickle.load(f)
+with open('models/rf_classifier_job_recommendation.pkl', 'rb') as f:
+    rf_classifier_job_recommendation = pickle.load(f)
+with open('models/tfidf_vectorizer_job_recommendation.pkl', 'rb') as f:
+    tfidf_vectorizer_job_recommendation = pickle.load(f)
 
 def pdf_to_text(file):
     reader = PdfReader(file)
@@ -18,14 +22,14 @@ def pdf_to_text(file):
     return text
 
 def cleanResume(txt):
-    cleanText = re.sub('http\S+\s', ' ', txt)
-    cleanText = re.sub('RT|cc', ' ', cleanText)
-    cleanText = re.sub('#\S+\s', ' ', cleanText)
-    cleanText = re.sub('@\S+', '  ', cleanText)
-    cleanText = re.sub('[%s]' % re.escape("""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""), ' ', cleanText)
-    cleanText = re.sub(r'[^\x00-\x7f]', ' ', cleanText)
-    cleanText = re.sub('\s+', ' ', cleanText)
-    return cleanText
+    txt = re.sub('http\S+\s', ' ', txt)
+    txt = re.sub('RT|cc', ' ', txt)
+    txt = re.sub('#\S+\s', ' ', txt)
+    txt = re.sub('@\S+', '  ', txt)
+    txt = re.sub('[%s]' % re.escape("""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""), ' ', txt)
+    txt = re.sub(r'[^\x00-\x7f]', ' ', txt)
+    txt = re.sub('\s+', ' ', txt)
+    return txt
 
 def predict_category(resume_text):
     resume_text= cleanResume(resume_text)
@@ -42,29 +46,16 @@ def job_recommendation(resume_text):
 
 #Resume Parsing
 def extract_name_from_resume(text):
-    name= None
-    pattern = r"(\b[A-Z][a-z]+\b)\s(\b[A-Z][a-z]+\b)"
-    match = re.search(pattern,text)
-    if match:
-        name = match.group()
-    return name
-
+    match = re.search(r"(\b[A-Z][a-z]+\b)\s(\b[A-Z][a-z]+\b)", text)
+    return match.group() if match else None
 
 def extract_email_from_resume(text):
-    email= None
-    pattern = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-za-z]{2,}\b"
-    match = re.search(pattern,text)
-    if match:
-        email = match.group()
-    return email
+    match = re.search(r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b", text)
+    return match.group() if match else None
 
 def extract_contact_number_from_resume(text):
-    contact_number = None
-    pattern = r"\b(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b"
-    match = re.search(pattern,text)
-    if match:
-        contact_number = match.group()
-    return contact_number
+    match = re.search(r"\b(?:\+?\d{1,3}[-.\s]?)?\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}\b", text)
+    return match.group() if match else None
 
 def extract_skills_from_resume(text):
     skills_list = [
